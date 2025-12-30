@@ -4,357 +4,208 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bill Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
+            background-color: #f8fafc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: manipulation;
         }
-
-        .app-container {
-            width: 100%;
-            max-width: 450px;
-            background-color: transparent;
+        .input-group:focus-within label {
+            color: #3b82f6;
         }
-
-        header {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        /* Input Section */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Toggle Switch Styling */
-        .toggle-container {
-            display: flex;
-            background: #e5e7eb;
-            border-radius: 20px;
-            padding: 2px;
-        }
-
-        .toggle-btn {
-            background: transparent;
-            border: none;
-            padding: 4px 12px;
-            border-radius: 18px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-light);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-btn.active {
-            background: var(--primary-color);
-            color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        input {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 1.25rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            background-color: #f9fafb;
-            color: var(--text-dark);
-            transition: border-color 0.2s;
-            outline: none;
-            -moz-appearance: textfield;
-        }
-
-        input:focus {
-            border-color: var(--primary-color);
-            background-color: #fff;
-        }
-
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
-
-        .helper-text {
-            font-size: 0.8rem;
-            color: var(--primary-color);
-            margin-top: 5px;
-            font-weight: 500;
-            height: 1.2em; /* Keeps space to prevent jumping */
+        input[type=number] {
+            -moz-appearance: textfield;
         }
-
-        /* Results Section */
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6;
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #3b82f6;
         }
-
-        .result-row:last-child {
-            border-bottom: none;
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #3b82f6;
         }
-
-        .result-label {
-            font-size: 0.95rem;
-            color: var(--text-light);
+        .preset-btn {
+            transition: all 0.2s;
         }
-
-        .result-value {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-dark);
+        .preset-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
         }
-
-        .total-row {
-            margin-top: 10px;
-            padding-top: 15px;
-            border-top: 2px dashed #e5e7eb;
-        }
-
-        .total-row .result-label {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .total-row .result-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary-color);
-        }
-
-        .negative { color: var(--accent-red); }
-        
-        .reset-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #e5e7eb;
-            color: var(--text-dark);
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .reset-btn:active { background-color: #d1d5db; }
-
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen p-4">
 
-    <div class="app-container">
-        <header>
-            <h1>Bill Calculator</h1>
+    <div class="max-w-md mx-auto w-full flex-grow flex flex-col">
+        <!-- Header -->
+        <header class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-800">Bill Calculator</h1>
         </header>
 
-        <div class="card">
+        <!-- Form Section -->
+        <div class="space-y-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6">
+            
+            <!-- Quantity Section -->
             <div class="input-group">
-                <div class="label-row">
-                    <label for="quantity">Quantity</label>
-                    
-                    <div class="toggle-container">
-                        <button class="toggle-btn active" id="btn-units" onclick="setMode('units')">Units</button>
-                        <button class="toggle-btn" id="btn-dozens" onclick="setMode('dozens')">Dozens</button>
+                <div class="flex justify-between items-end mb-1">
+                    <label id="qtyLabel" for="quantity" class="block text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">Quantity (Units)</label>
+                    <div class="flex items-center space-x-2 bg-slate-100 rounded-full px-2 py-1">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Dozens</span>
+                        <div class="relative inline-block w-8 align-middle select-none transition duration-200 ease-in">
+                            <input type="checkbox" name="toggle" id="toggleDozens" class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer outline-none"/>
+                            <label for="toggleDozens" class="toggle-label block overflow-hidden h-4 rounded-full bg-slate-300 cursor-pointer"></label>
+                        </div>
                     </div>
                 </div>
-                
-                <input type="number" id="quantity" inputmode="decimal" placeholder="0">
-                <div id="qty-helper" class="helper-text"></div>
+                <input type="number" id="quantity" value="1" step="1" 
+                    class="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl p-4 text-xl font-semibold text-slate-800 outline-none transition-all"
+                    placeholder="Enter value">
+                <div id="unitDisplay" class="mt-2 ml-1 text-sm text-blue-600 font-medium hidden">
+                    Total Units: <span id="totalUnitsCount">12</span>
+                </div>
             </div>
 
+            <!-- Unit Price -->
             <div class="input-group">
-                <label for="price">Unit Price</label>
-                <input type="number" id="price" inputmode="decimal" value="85.71">
+                <label for="unitPrice" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1 ml-1">Unit Price (Rs)</label>
+                <input type="number" id="unitPrice" value="95.24" step="0.01" 
+                    class="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl p-4 text-xl font-semibold text-slate-800 outline-none transition-all"
+                    placeholder="95.24">
             </div>
 
+            <!-- Margin Section -->
             <div class="input-group">
-                <label for="margin">Margin (%)</label>
-                <input type="number" id="margin" inputmode="decimal" value="20">
+                <div class="flex justify-between items-center mb-1 ml-1">
+                    <label for="margin" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Margin (%)</label>
+                    <div class="flex space-x-1">
+                        <button type="button" onclick="setMargin(20)" id="btn20" class="preset-btn px-3 py-1 text-[10px] font-bold rounded-lg border border-slate-200 bg-slate-50 text-slate-500 active">20%</button>
+                        <button type="button" onclick="setMargin(25)" id="btn25" class="preset-btn px-3 py-1 text-[10px] font-bold rounded-lg border border-slate-200 bg-slate-50 text-slate-500">25%</button>
+                    </div>
+                </div>
+                <input type="number" id="margin" value="20" step="0.1" 
+                    class="w-full bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-xl p-4 text-xl font-semibold text-slate-800 outline-none transition-all"
+                    placeholder="20">
             </div>
         </div>
 
-        <div class="card">
-            <div class="result-row">
-                <span class="result-label">Base Amount</span>
-                <span class="result-value" id="res-amount">0.00</span>
+        <!-- Breakdown Section -->
+        <div class="bg-slate-800 text-white p-6 rounded-3xl shadow-xl space-y-4">
+            <div class="flex justify-between items-center text-slate-400 text-sm border-b border-slate-700 pb-2">
+                <span>Invoice Amount</span>
+                <span id="displayAmount" class="text-slate-200 font-mono">Rs 0.00</span>
             </div>
-            <div class="result-row">
-                <span class="result-label">Margin Amount</span>
-                <span class="result-value negative" id="res-margin">0.00</span>
+
+            <div class="flex justify-between items-center text-slate-400 text-sm">
+                <span>Less (<span id="marginLabel">20</span>%)</span>
+                <span id="displayMargin" class="text-red-400 font-mono">-Rs 0.00</span>
             </div>
-            <div class="result-row">
-                <span class="result-label">Net Amount</span>
-                <span class="result-value" id="res-net">0.00</span>
+
+            <div class="flex justify-between items-center text-slate-400 text-sm border-b border-slate-700 pb-2">
+                <span>Net Amount</span>
+                <span id="displayNet" class="text-slate-200 font-mono font-bold">Rs 0.00</span>
             </div>
-            <div class="result-row">
-                <span class="result-label">Excise Duty (5%)</span>
-                <span class="result-value" id="res-excise">0.00</span>
+
+            <div class="flex justify-between items-center text-slate-400 text-sm">
+                <span>Excise Duty (5%)</span>
+                <span id="displayExcise" class="text-slate-200 font-mono">+Rs 0.00</span>
             </div>
-            
-            <div class="result-row total-row">
-                <span class="result-label">Total Amount</span>
-                <span class="result-value" id="res-total">0.00</span>
+
+            <!-- Total Amount Highlight -->
+            <div class="pt-4 flex flex-col">
+                <span class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-1">Total Payable</span>
+                <div id="displayTotal" class="text-4xl font-extrabold tracking-tight">Rs 0.00</div>
             </div>
         </div>
         
-        <button class="reset-btn" onclick="resetForm()">Reset</button>
+        <footer class="mt-auto py-6 text-center text-slate-400 text-xs">
+            Calculations update automatically as you type.
+        </footer>
     </div>
 
     <script>
-        // DOM Elements
-        const qtyInput = document.getElementById('quantity');
-        const priceInput = document.getElementById('price');
+        const quantityInput = document.getElementById('quantity');
+        const unitPriceInput = document.getElementById('unitPrice');
         const marginInput = document.getElementById('margin');
-        const qtyHelper = document.getElementById('qty-helper');
-        
-        const btnUnits = document.getElementById('btn-units');
-        const btnDozens = document.getElementById('btn-dozens');
+        const toggleDozens = document.getElementById('toggleDozens');
+        const qtyLabel = document.getElementById('qtyLabel');
+        const unitDisplay = document.getElementById('unitDisplay');
+        const totalUnitsCount = document.getElementById('totalUnitsCount');
+        const marginLabel = document.getElementById('marginLabel');
 
-        const resAmount = document.getElementById('res-amount');
-        const resMargin = document.getElementById('res-margin');
-        const resNet = document.getElementById('res-net');
-        const resExcise = document.getElementById('res-excise');
-        const resTotal = document.getElementById('res-total');
+        const displayAmount = document.getElementById('displayAmount');
+        const displayMargin = document.getElementById('displayMargin');
+        const displayNet = document.getElementById('displayNet');
+        const displayExcise = document.getElementById('displayExcise');
+        const displayTotal = document.getElementById('displayTotal');
 
-        // State
-        let isDozens = false;
-
-        function setMode(mode) {
-            if (mode === 'dozens') {
-                isDozens = true;
-                btnDozens.classList.add('active');
-                btnUnits.classList.remove('active');
-            } else {
-                isDozens = false;
-                btnUnits.classList.add('active');
-                btnDozens.classList.remove('active');
-            }
-            calculate();
-        }
-
-        function calculate() {
-            // Get raw input values
-            const rawQty = parseFloat(qtyInput.value) || 0;
-            const price = parseFloat(priceInput.value) || 0;
-            const marginPercent = parseFloat(marginInput.value) || 0;
-
-            // Determine effective quantity
-            let effectiveQty = rawQty;
-            if (isDozens) {
-                effectiveQty = rawQty * 12;
-                // Show helper text if using Dozens
-                if (rawQty > 0) {
-                    qtyHelper.textContent = `${rawQty} Doz × 12 = ${effectiveQty} Units`;
-                } else {
-                    qtyHelper.textContent = '';
-                }
-            } else {
-                qtyHelper.textContent = ''; // Clear helper if in Units mode
-            }
-
-            // Calculations
-            // 1. Amount
-            const amount = price * effectiveQty;
-
-            // 2. Margin Amount
-            const marginAmount = 0.01 * marginPercent * amount;
-
-            // 3. Excise Duty (on Base Amount)
-            const exciseDuty = 0.05 * amount;
-
-            // 4. Net Amount
-            const netAmount = amount - marginAmount;
-
-            // 5. Total Amount
-            const totalAmount = netAmount + exciseDuty;
-
-            // Update UI
-            resAmount.textContent = formatNumber(amount);
-            resMargin.textContent = "- " + formatNumber(marginAmount);
-            resExcise.textContent = formatNumber(exciseDuty);
-            resNet.textContent = formatNumber(netAmount);
-            resTotal.textContent = formatNumber(totalAmount);
-        }
-
-        function formatNumber(num) {
-            return num.toLocaleString(undefined, {
+        function formatCurrency(num) {
+            return "Rs " + num.toLocaleString('en-IN', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
         }
-        
-        function resetForm() {
-            qtyInput.value = '';
-            priceInput.value = '85.71';
-            marginInput.value = '20';
-            setMode('units'); // Reset toggle to Units
+
+        function setMargin(val) {
+            marginInput.value = val;
+            updatePresetButtons(val);
             calculate();
-            qtyInput.focus();
         }
 
-        // Event Listeners
-        qtyInput.addEventListener('input', calculate);
-        priceInput.addEventListener('input', calculate);
-        marginInput.addEventListener('input', calculate);
+        function updatePresetButtons(currentVal) {
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            if (currentVal === 20) document.getElementById('btn20').classList.add('active');
+            if (currentVal === 25) document.getElementById('btn25').classList.add('active');
+        }
 
-        // Initial Run
-        calculate();
+        function calculate() {
+            const rawQty = parseFloat(quantityInput.value) || 0;
+            const up = parseFloat(unitPriceInput.value) || 0;
+            const mgPercent = parseFloat(marginInput.value) || 0;
+            const isDozens = toggleDozens.checked;
 
+            updatePresetButtons(mgPercent);
+
+            // Handle Dozens Logic
+            const qty = isDozens ? rawQty * 12 : rawQty;
+            
+            // Update UI for unit count
+            if (isDozens && rawQty > 0) {
+                qtyLabel.textContent = "Quantity (Dozens)";
+                unitDisplay.classList.remove('hidden');
+                totalUnitsCount.textContent = qty;
+            } else {
+                qtyLabel.textContent = "Quantity (Units)";
+                unitDisplay.classList.add('hidden');
+            }
+
+            // Calculations
+            const amount = up * qty;
+            const marginAmount = 0.01 * mgPercent * amount;
+            const exciseDuty = 0.05 * amount;
+            const netAmount = amount - marginAmount;
+            const totalAmount = netAmount + exciseDuty;
+
+            // Update UI
+            marginLabel.textContent = mgPercent;
+            displayAmount.textContent = formatCurrency(amount);
+            displayMargin.textContent = "-" + formatCurrency(marginAmount);
+            displayNet.textContent = formatCurrency(netAmount);
+            displayExcise.textContent = "+" + formatCurrency(exciseDuty);
+            displayTotal.textContent = formatCurrency(totalAmount);
+        }
+
+        // Event listeners
+        [quantityInput, unitPriceInput, marginInput, toggleDozens].forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        // Initial calculation
+        window.onload = calculate;
     </script>
 </body>
 </html>
