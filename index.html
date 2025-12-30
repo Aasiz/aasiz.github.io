@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bill Calculator</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: transparent;
+        }
+
+        header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Input Section */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Toggle Switch Styling */
+        .toggle-container {
+            display: flex;
+            background: #e5e7eb;
+            border-radius: 20px;
+            padding: 2px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 18px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background-color: #f9fafb;
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+            outline: none;
+            -moz-appearance: textfield;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .helper-text {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            margin-top: 5px;
+            font-weight: 500;
+            height: 1.2em; /* Keeps space to prevent jumping */
+        }
+
+        /* Results Section */
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .result-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .total-row {
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px dashed #e5e7eb;
+        }
+
+        .total-row .result-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .total-row .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .negative { color: var(--accent-red); }
+        
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #e5e7eb;
+            color: var(--text-dark);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .reset-btn:active { background-color: #d1d5db; }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>Bill Calculator</h1>
+        </header>
+
+        <div class="card">
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="quantity">Quantity</label>
+                    
+                    <div class="toggle-container">
+                        <button class="toggle-btn active" id="btn-units" onclick="setMode('units')">Units</button>
+                        <button class="toggle-btn" id="btn-dozens" onclick="setMode('dozens')">Dozens</button>
+                    </div>
+                </div>
+                
+                <input type="number" id="quantity" inputmode="decimal" placeholder="0">
+                <div id="qty-helper" class="helper-text"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="price">Unit Price</label>
+                <input type="number" id="price" inputmode="decimal" value="85.71">
+            </div>
+
+            <div class="input-group">
+                <label for="margin">Margin (%)</label>
+                <input type="number" id="margin" inputmode="decimal" value="20">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="result-row">
+                <span class="result-label">Base Amount</span>
+                <span class="result-value" id="res-amount">0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Margin Amount</span>
+                <span class="result-value negative" id="res-margin">0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Net Amount</span>
+                <span class="result-value" id="res-net">0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Excise Duty (5%)</span>
+                <span class="result-value" id="res-excise">0.00</span>
+            </div>
+            
+            <div class="result-row total-row">
+                <span class="result-label">Total Amount</span>
+                <span class="result-value" id="res-total">0.00</span>
+            </div>
+        </div>
+        
+        <button class="reset-btn" onclick="resetForm()">Reset</button>
+    </div>
+
+    <script>
+        // DOM Elements
+        const qtyInput = document.getElementById('quantity');
+        const priceInput = document.getElementById('price');
+        const marginInput = document.getElementById('margin');
+        const qtyHelper = document.getElementById('qty-helper');
+        
+        const btnUnits = document.getElementById('btn-units');
+        const btnDozens = document.getElementById('btn-dozens');
+
+        const resAmount = document.getElementById('res-amount');
+        const resMargin = document.getElementById('res-margin');
+        const resNet = document.getElementById('res-net');
+        const resExcise = document.getElementById('res-excise');
+        const resTotal = document.getElementById('res-total');
+
+        // State
+        let isDozens = false;
+
+        function setMode(mode) {
+            if (mode === 'dozens') {
+                isDozens = true;
+                btnDozens.classList.add('active');
+                btnUnits.classList.remove('active');
+            } else {
+                isDozens = false;
+                btnUnits.classList.add('active');
+                btnDozens.classList.remove('active');
+            }
+            calculate();
+        }
+
+        function calculate() {
+            // Get raw input values
+            const rawQty = parseFloat(qtyInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+            const marginPercent = parseFloat(marginInput.value) || 0;
+
+            // Determine effective quantity
+            let effectiveQty = rawQty;
+            if (isDozens) {
+                effectiveQty = rawQty * 12;
+                // Show helper text if using Dozens
+                if (rawQty > 0) {
+                    qtyHelper.textContent = `${rawQty} Doz × 12 = ${effectiveQty} Units`;
+                } else {
+                    qtyHelper.textContent = '';
+                }
+            } else {
+                qtyHelper.textContent = ''; // Clear helper if in Units mode
+            }
+
+            // Calculations
+            // 1. Amount
+            const amount = price * effectiveQty;
+
+            // 2. Margin Amount
+            const marginAmount = 0.01 * marginPercent * amount;
+
+            // 3. Excise Duty (on Base Amount)
+            const exciseDuty = 0.05 * amount;
+
+            // 4. Net Amount
+            const netAmount = amount - marginAmount;
+
+            // 5. Total Amount
+            const totalAmount = netAmount + exciseDuty;
+
+            // Update UI
+            resAmount.textContent = formatNumber(amount);
+            resMargin.textContent = "- " + formatNumber(marginAmount);
+            resExcise.textContent = formatNumber(exciseDuty);
+            resNet.textContent = formatNumber(netAmount);
+            resTotal.textContent = formatNumber(totalAmount);
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        function resetForm() {
+            qtyInput.value = '';
+            priceInput.value = '85.71';
+            marginInput.value = '20';
+            setMode('units'); // Reset toggle to Units
+            calculate();
+            qtyInput.focus();
+        }
+
+        // Event Listeners
+        qtyInput.addEventListener('input', calculate);
+        priceInput.addEventListener('input', calculate);
+        marginInput.addEventListener('input', calculate);
+
+        // Initial Run
+        calculate();
+
+    </script>
+</body>
+</html>
